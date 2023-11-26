@@ -84,10 +84,6 @@ def get_sentiment_result(lexicon_polarities):
     
 
 
-start_time = datetime.now()
-get_sentiment_result(get_lexicon_sentiments(preprocessing(Get_market_news("AMZN"))))
-end_time = datetime.now()
-print(end_time - start_time)
 
 
 
