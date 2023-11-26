@@ -6,7 +6,7 @@ def Get_market_news(ticker):
     market_news = []
 
     try:
-        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-01-01&language=en&api_token=PCCHjrMwiZzPK2iuujAjsi63DCVfJzyGujYyk7I7")
+        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-01-01&language=en&api_token=API_KEY")
         data = response.json()['data']
 
         for article in data:
