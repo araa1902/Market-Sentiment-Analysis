@@ -44,7 +44,7 @@ def preprocessing(news):
 
     return processed_news
 
-# Function to read lexicon sentiments from a file
+# Function to read lexicon sentiments from a file creating a dictionary holding the word and its corresponding sentiment.
 def lexicon_sentiments():
     sentiment_dict = {}
     with open("C:\\Users\\kumar\\OneDrive\\semantics\\lexicon_sentiments.txt", "r") as f:
