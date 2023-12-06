@@ -26,7 +26,7 @@ def Get_market_news(ticker):
         return f"Failed to retrieve market news data for ticker {ticker}. Error: {e}"
 
 def preprocessing(news):
-    with open("C:\\Users\\kumar\\OneDrive\\semantics\\stopwords.txt", 'r') as f:
+    with open("FILEPATH", 'r') as f:
         words_to_remove = set(word.strip() for word in f.readlines())
 
     # Iterate through each tuple (title, description) in the list
@@ -41,7 +41,7 @@ def preprocessing(news):
 
 def lexicon_sentiments(): # Creates dictionary holding the words and their corresponding sentiment
     sentiment_dict = {}
-    with open("C:\\Users\\kumar\\OneDrive\\semantics\\lexicon_sentiments.txt", "r") as f:
+    with open("FILEPATH", "r") as f:
         for line in f:
             results = line.strip().split('\t')
             word, sentiment_value = results[0], float(results[1])
