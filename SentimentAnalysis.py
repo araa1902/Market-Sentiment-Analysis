@@ -1,13 +1,15 @@
+from hashlib import new
 import requests
 import math
 from datetime import datetime
 import os
+import re
 
 def Get_market_news(ticker):
     market_news = []
     try:
         # Fetch market news data for the specified ticker from the API
-        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-01-01&language=en&api_token=APIKEY")
+        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-12-01&language=en&api_token=APIKEY")
         data = response.json()['data']
 
         for article in data:
@@ -20,17 +22,19 @@ def Get_market_news(ticker):
                 if title and description:
                     # Store title and description in a tuple within the list
                     market_news.append((title, description))
-
-        return market_news
+            return market_news
     except Exception as e:
         return f"Failed to retrieve market news data for ticker {ticker}. Error: {e}"
 
 def preprocessing(news):
     with open(os.path.join(os.path.dirname(__file__), "stopwords.txt"), 'r') as f:
         words_to_remove = set(word.strip() for word in f.readlines())
-
+    
+    #Removed any punctuation or symbols which may hinder processing.
+    news = [(re.sub(r'[^a-zA-Z0-9\s]', '', title), re.sub(r'[^a-zA-Z0-9\s]', '', description)) for title, description in news]
     # Iterate through each tuple (title, description) in the list
     processed_news = []
+
     for title, description in news:
         # Remove stopwords from title and description, and convert to lowercase
         title_filtered = [word.lower() for word in title.split() if word.lower() not in words_to_remove]
@@ -77,15 +81,19 @@ def get_lexicon_sentiments(processed_news):
 def get_sentiment_result(lexicon_polarities):
     p_lexicons, n_lexicons = lexicon_polarities[0], lexicon_polarities[1]
     
-    # Check if both positive and negative lexicons are zero, indicating a neutral sentiment
     if p_lexicons == 0 and n_lexicons == 0:
-        return "This stock has a neutral sentiment"
+        return "This stock is following a neutral sentiment"
+    # Check if both positive and negative lexicons are zero, indicating a neutral sentiment
+    if p_lexicons == 0:
+        return "This stock is following a negative sentiment"
+    elif n_lexicons == 0:
+        return "This stock is following a positive sentiment"
     
     # Calculate positive and negative probabilities using Naive Bayes formula
     try:
         positive_prob, negative_prob = math.log(p_lexicons / (p_lexicons + n_lexicons)), math.log(n_lexicons / (p_lexicons + n_lexicons))
-    except:
-        return "Unable to calculate sentiment for ticker."
+    except SyntaxError as e:
+        return f"Unable to calculate sentiment for ticker. {e}"
     
     # Compare probabilities to determine sentiment
     if positive_prob > negative_prob:
@@ -98,8 +106,16 @@ def get_sentiment_result(lexicon_polarities):
 def get_sentiment():
     ticker = input("Please enter a valid ticker: ")
     try:
-        print(get_sentiment_result(get_lexicon_sentiments(preprocessing(Get_market_news(ticker)))))
-    except OSError as e:
+        market_news_data = Get_market_news(ticker)
+        if not market_news_data:
+            print(f"No relevant market news for ticker: {ticker}!")
+            quit()
+        else:
+            processed_data = preprocessing(market_news_data)
+            lexicon_sentiments = get_lexicon_sentiments(processed_data)
+            sentiment_result = get_sentiment_result(lexicon_sentiments)
+            print(sentiment_result)
+    except SyntaxError as e:
         print(e)
 
 get_sentiment()
