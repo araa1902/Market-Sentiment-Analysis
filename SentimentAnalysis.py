@@ -1,13 +1,13 @@
 import requests
 import math
 from datetime import datetime
+import os
 
 def Get_market_news(ticker):
     market_news = []
-
     try:
         # Fetch market news data for the specified ticker from the API
-        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-01-01&language=en&api_token=APIKEY")
+        response = requests.get(f"https://api.marketaux.com/v1/news/all?symbols={ticker}&must_have_entities=true&published_after=2023-01-01&language=en&api_token=PCCHjrMwiZzPK2iuujAjsi63DCVfJzyGujYyk7I7")
         data = response.json()['data']
 
         for article in data:
@@ -26,7 +26,7 @@ def Get_market_news(ticker):
         return f"Failed to retrieve market news data for ticker {ticker}. Error: {e}"
 
 def preprocessing(news):
-    with open("FILEPATH", 'r') as f:
+    with open(os.path.join(os.path.dirname(__file__), "stopwords.txt"), 'r') as f:
         words_to_remove = set(word.strip() for word in f.readlines())
 
     # Iterate through each tuple (title, description) in the list
@@ -41,7 +41,7 @@ def preprocessing(news):
 
 def lexicon_sentiments(): # Creates dictionary holding the words and their corresponding sentiment
     sentiment_dict = {}
-    with open("FILEPATH", "r") as f:
+    with open(os.path.join(os.path.dirname(__file__), "lexicon_sentiments.txt"), 'r') as f:
         for line in f:
             results = line.strip().split('\t')
             word, sentiment_value = results[0], float(results[1])
@@ -94,3 +94,12 @@ def get_sentiment_result(lexicon_polarities):
     else:
         print(negative_prob)
         return "This stock is following a negative sentiment"
+
+def get_sentiment():
+    ticker = input("Please enter a valid ticker: ")
+    try:
+        print(get_sentiment_result(get_lexicon_sentiments(preprocessing(Get_market_news(ticker)))))
+    except OSError as e:
+        print(e)
+
+get_sentiment()
