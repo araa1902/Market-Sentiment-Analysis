@@ -12,3 +12,5 @@ Above is an example of the program running using the META as the company of choi
 To run the analysis:
   1. Download the python file and two corresponding text files to a folder. 
   1. Retrieve an API token via the marketaux API client and place the token in the request URL at the position "APIKEY".
+
+**NOTE:** Due to the constraints of the free API plan, a limited amount of data is received, and consequently, some sentiment results may not be entirely accurate.
