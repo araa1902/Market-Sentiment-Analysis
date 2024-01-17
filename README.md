@@ -11,4 +11,4 @@ Here is an example of the program running using the META as the company of choic
 
 To run the analysis:
   1. Download the python file and two corresponding text files to a folder. 
-  1. Retrieve an API token via the marketaux API client and place the token in the request url at the position "APIKEY".
+  1. Retrieve an API token via the marketaux API client and place the token in the request URL at the position "APIKEY".
